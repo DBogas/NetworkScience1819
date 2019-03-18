@@ -66,15 +66,12 @@ def calculate_giant_component_size(graph):
             currComp = list()
 
     time_end = int(round(time.time() * 1000))
-    print "\t%d nodes \n\tin %d ms\n\twith giant component having size %d" % (len(visitedNodes),time_end-time_start,max(sizes))
+    #print "\t%d nodes \n\tin %d ms\n\twith giant component having size %d" % (len(visitedNodes),time_end-time_start,max(sizes))
     return max(sizes)
 
 if __name__ == '__main__':
-    #graph1 = read_graph_from_file("random1.txt")
-    #components1  = find_connected_components(graph1)
+    graph1 = read_graph_from_file("random1.txt")
+    print "Graph 1 has giant component size: %d " % calculate_giant_component_size(graph1)
 
     graph2 = read_graph_from_file("random2.txt")
-    calculate_giant_component_size(graph2)
-
-
-
+    print "Graph 2 has giant component size: %d " % calculate_giant_component_size(graph2)
