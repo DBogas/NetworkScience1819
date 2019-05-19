@@ -2,6 +2,7 @@ import networkx as nx
 from networkx.algorithms import bipartite
 import csv
 
+
 def read_csv(filepath):
     res = list()
     with open(filepath) as csv_file:
@@ -13,57 +14,66 @@ def read_csv(filepath):
         print "Read {} lines".format(line_count)
         return res
 
-def interpretation():
-    lines = read_csv('raw_unicode.csv')
-    for line in lines:
-        print "In {}, {} is spoken by {} people, which is {}% of the population".format(line[0],line[2],line[4],line[5])
-    print "\n"
 
-def read_countries_from_lines(lines):
-    res = list()
-    for line in lines:
-        if line[0] not in res:
-            res.append(line[0])
-    return res
-
-def read_languages_from_lines(lines):
-    res = list()
-    for line in lines:
-        if line[2] not in res:
-            res.append(line[2])
-        return res
+def write_unicode_nodes_to_csv(rows):
+    with open('unicode_nodes.csv', mode='w') as nodes_file:
+        writer = csv.writer(nodes_file, delimiter=',')
+        for row in rows:
+            writer.writerow(row)
+    return
 
 
-
-def graph_gen(lines, countries, languages):
+def generate_country_nodes_rows(nodes):
     """
     Nodes that are countries have bipartite attr = 0
     Nodes that are languages have bipartite attr = 1
     """
-    graph = nx.Graph()
+    rows = list()
+    for node in nodes:
+        if node[1]['bipartite'] == 0:
+            row = [node[0], node[1]['id'], node[1]['pop_total'], node[1]['bipartite']]
+        elif node[1]['bipartite'] == 1:
+            row = [node[0], node[1]['id'], node[1]['bipartite']]
+        rows.append(row)
+    return rows
 
-    graph.add_nodes_from(countries, bipartite=0)
 
-    graph.add_nodes_from(languages, bipartite=1)
+def write_unicode_edges_to_csv(rows):
+    with open('unicode_edges.csv', mode='w') as edges_file:
+        writer = csv.writer(edges_file, delimiter=',')
+        for row in rows:
+            writer.writerow(row)
+    return
+
+
+def generate_edges_rows(edges):
+    result = list()
+    for edge in edges:
+        row = [edge[0], edge[1], edge[2]['weight']]
+        result.append(row)
+    return result
+
+
+def graph_gen(lines):
+    """
+    Nodes that are countries have bipartite attr = 0
+    Nodes that are languages have bipartite attr = 1
+    """
+    g = nx.Graph()
 
     for line in lines:
-        graph.add_edge(line[0], line[2], weight=line[5])
+        g.add_node(line[0], bipartite=0, id=line[1], pop_total=line[4])
+        g.add_node(line[2], bipartite=1, id=line[3])
+        g.add_edge(line[0], line[2], weight=line[5])
 
-    for node in graph.nodes(data=True):
-        print node
-    #top_nodes = {n for n, d in graph.nodes(data=True) if d['bipartite'] == 0}
-    #bottom_nodes = set(graph) - top_nodes
-
-    #print(round(bipartite.density(graph, bottom_nodes), 2))
+    return g
 
 
-    return graph
-
-
+def write_to_files():
+    lines = read_csv('raw_unicode.csv')
+    graph = graph_gen(lines)
+    write_unicode_edges_to_csv(generate_edges_rows(graph.edges(data=True)))
+    write_unicode_nodes_to_csv(generate_country_nodes_rows(graph.nodes(data=True)))
 
 if __name__ == '__main__':
-    lines = read_csv('raw_unicode.csv')
-    countries = read_countries_from_lines(lines)
-    languages = read_languages_from_lines(lines)
-
-    graph = graph_gen(lines, countries, languages)
+    write_to_files()
