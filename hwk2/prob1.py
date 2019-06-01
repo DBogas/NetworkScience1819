@@ -18,7 +18,7 @@ def read_csv(filepath):
 def write_unicode_nodes_to_csv(rows):
     with open('unicode_nodes.csv', mode='w') as nodes_file:
         writer = csv.writer(nodes_file, delimiter=';')
-        row1 = ["Country","Country_ID","Population","bipartite_group"]
+        row1 = ["Id","Country_ID","Population","bipartite_group"]
         writer.writerow(row1)
         for row in rows:
             writer.writerow(row)
@@ -35,7 +35,7 @@ def generate_country_nodes_rows(nodes):
         if node[1]['bipartite'] == 0:
             row = [node[0], node[1]['id'], node[1]['pop_total'], node[1]['bipartite']]
         elif node[1]['bipartite'] == 1:
-            row = [node[0], node[1]['id'], "-", node[1]['bipartite']]
+            row = [node[0], node[1]['id'], -1, node[1]['bipartite']]
         rows.append(row)
     return rows
 
