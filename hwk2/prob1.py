@@ -35,7 +35,7 @@ def generate_country_nodes_rows(nodes):
         if node[1]['bipartite'] == 0:
             row = [node[0], node[1]['id'], node[1]['pop_total'], node[1]['bipartite']]
         elif node[1]['bipartite'] == 1:
-            row = [node[0], node[1]['id'], -1, node[1]['bipartite']]
+            row = [node[0], node[1]['id'], node[1]['pop_speakers'], node[1]['bipartite']]
         rows.append(row)
     return rows
 
@@ -67,7 +67,8 @@ def graph_gen(lines):
 
     for line in lines:
         g.add_node(line[0], bipartite=0, id=line[1], pop_total=line[4])
-        g.add_node(line[2], bipartite=1, id=line[3])
+        print "values are {} and {} and result is {} ".format(line[4], line[5], int(int(line[4]) * float(line[5])))
+        g.add_node(line[2], bipartite=1, id=line[3], pop_speakers = int(int(line[4]) * float(line[5])))
         g.add_edge(line[0], line[2], weight=line[5])
 
     return g
